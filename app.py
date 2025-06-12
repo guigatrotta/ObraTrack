@@ -33,12 +33,11 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
-json_str = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
-if not json_str:
-    raise ValueError("Variável de ambiente GOOGLE_SERVICE_ACCOUNT_JSON não definida.")
+# Lê o conteúdo escapado e desserializa corretamente
+json_str = os.environ["GOOGLE_CREDENTIALS_JSON_ESCAPED"].replace('\\n', '\n')
+credentials_dict = json.loads(json_str)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
 
-creds_dict = json.loads(json_str)
-creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 
 
 client = gspread.authorize(creds)
