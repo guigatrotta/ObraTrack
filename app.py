@@ -26,13 +26,20 @@ def parse_data(data_str):
 
 
 
-# === Autenticação Google Sheets ===
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-import json
+# === Autenticação Google Sheets via variável de ambiente ===
 import os
+import json
+from oauth2client.service_account import ServiceAccountCredentials
 
-credentials_dict = json.loads(os.environ["GOOGLE_CREDENTIALS_JSON"])
-creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+
+json_str = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+if not json_str:
+    raise ValueError("Variável de ambiente GOOGLE_SERVICE_ACCOUNT_JSON não definida.")
+
+creds_dict = json.loads(json_str)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
 
 client = gspread.authorize(creds)
 
